@@ -1,0 +1,272 @@
+{
+  "schema_version": "1.0",
+  "avatar_asset_id": "adult_male_default",
+  "glb_file": "adult_male_default.glb",
+  "presentation": "adult_male_presenting_human_avatar",
+  "nominal_height_m": 1.78,
+  "vertex_count": 2826,
+  "triangle_count": 5188,
+  "materials": [
+    "human_skin",
+    "human_hair",
+    "casual_shirt",
+    "trousers",
+    "shoes"
+  ],
+  "draw_skeleton": false,
+  "hide_bones": true,
+  "coordinate_convention": {
+    "simulation_world": "right_handed_z_up_x_right_y_forward",
+    "gltf_asset": "right_handed_y_up_x_right_minus_z_forward",
+    "world_to_gltf_matrix": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ],
+      [
+        0.0,
+        -1.0,
+        0.0
+      ]
+    ]
+  },
+  "joint_names": [
+    "pelvis",
+    "spine",
+    "chest",
+    "neck",
+    "head",
+    "left_shoulder",
+    "left_elbow",
+    "left_wrist",
+    "right_shoulder",
+    "right_elbow",
+    "right_wrist",
+    "left_hip",
+    "left_knee",
+    "left_ankle",
+    "right_hip",
+    "right_knee",
+    "right_ankle"
+  ],
+  "joint_parents": {
+    "pelvis": null,
+    "spine": "pelvis",
+    "chest": "spine",
+    "neck": "chest",
+    "head": "neck",
+    "left_shoulder": "chest",
+    "left_elbow": "left_shoulder",
+    "left_wrist": "left_elbow",
+    "right_shoulder": "chest",
+    "right_elbow": "right_shoulder",
+    "right_wrist": "right_elbow",
+    "left_hip": "pelvis",
+    "left_knee": "left_hip",
+    "left_ankle": "left_knee",
+    "right_hip": "pelvis",
+    "right_knee": "right_hip",
+    "right_ankle": "right_knee"
+  },
+  "joint_node_indices": {
+    "pelvis": 0,
+    "spine": 1,
+    "chest": 2,
+    "neck": 3,
+    "head": 4,
+    "left_shoulder": 5,
+    "left_elbow": 6,
+    "left_wrist": 7,
+    "right_shoulder": 8,
+    "right_elbow": 9,
+    "right_wrist": 10,
+    "left_hip": 11,
+    "left_knee": 12,
+    "left_ankle": 13,
+    "right_hip": 14,
+    "right_knee": 15,
+    "right_ankle": 16
+  },
+  "rest_joints_world_m": {
+    "pelvis": [
+      0.0,
+      0.0,
+      0.9434
+    ],
+    "spine": [
+      0.0,
+      0.0,
+      1.1303
+    ],
+    "chest": [
+      0.0,
+      0.0,
+      1.3795
+    ],
+    "neck": [
+      0.0,
+      0.0,
+      1.5041
+    ],
+    "head": [
+      0.0,
+      0.0178,
+      1.6465
+    ],
+    "left_shoulder": [
+      -0.195,
+      0.0,
+      1.4329
+    ],
+    "left_elbow": [
+      -0.225,
+      0.0,
+      1.1214
+    ],
+    "left_wrist": [
+      -0.24,
+      0.0267,
+      0.8455
+    ],
+    "right_shoulder": [
+      0.195,
+      0.0,
+      1.4329
+    ],
+    "right_elbow": [
+      0.225,
+      0.0,
+      1.1214
+    ],
+    "right_wrist": [
+      0.24,
+      0.0267,
+      0.8455
+    ],
+    "left_hip": [
+      -0.095,
+      0.0,
+      0.9167
+    ],
+    "left_knee": [
+      -0.095,
+      0.01424,
+      0.5073
+    ],
+    "left_ankle": [
+      -0.095,
+      -0.0178,
+      0.0979
+    ],
+    "right_hip": [
+      0.095,
+      0.0,
+      0.9167
+    ],
+    "right_knee": [
+      0.095,
+      0.01424,
+      0.5073
+    ],
+    "right_ankle": [
+      0.095,
+      -0.0178,
+      0.0979
+    ]
+  },
+  "rest_joints_gltf_m": {
+    "pelvis": [
+      0.0,
+      0.9434,
+      -0.0
+    ],
+    "spine": [
+      0.0,
+      1.1303,
+      -0.0
+    ],
+    "chest": [
+      0.0,
+      1.3795,
+      -0.0
+    ],
+    "neck": [
+      0.0,
+      1.5041,
+      -0.0
+    ],
+    "head": [
+      0.0,
+      1.6465,
+      -0.0178
+    ],
+    "left_shoulder": [
+      -0.195,
+      1.4329,
+      -0.0
+    ],
+    "left_elbow": [
+      -0.225,
+      1.1214,
+      -0.0
+    ],
+    "left_wrist": [
+      -0.24,
+      0.8455,
+      -0.0267
+    ],
+    "right_shoulder": [
+      0.195,
+      1.4329,
+      -0.0
+    ],
+    "right_elbow": [
+      0.225,
+      1.1214,
+      -0.0
+    ],
+    "right_wrist": [
+      0.24,
+      0.8455,
+      -0.0267
+    ],
+    "left_hip": [
+      -0.095,
+      0.9167,
+      -0.0
+    ],
+    "left_knee": [
+      -0.095,
+      0.5073,
+      -0.01424
+    ],
+    "left_ankle": [
+      -0.095,
+      0.0979,
+      0.0178
+    ],
+    "right_hip": [
+      0.095,
+      0.9167,
+      -0.0
+    ],
+    "right_knee": [
+      0.095,
+      0.5073,
+      -0.01424
+    ],
+    "right_ankle": [
+      0.095,
+      0.0979,
+      0.0178
+    ]
+  },
+  "threejs_adapter_notes": "Load GLB with Three.js GLTFLoader. Keep skeleton/bones invisible. Map each MotionFrame.joints_m[name] via world_to_gltf_matrix and update each bone's world position/orientation in hierarchical parent-to-child order.",
+  "license": "MIT (procedurally generated within repository; no third-party assets)"
+}
