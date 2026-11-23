@@ -1,0 +1,90 @@
+schema_version: "1.0"
+actor:
+  actor_id: "person_01"
+  presentation: "adult_male_presenting_human_avatar"
+  height_m_range: [1.65, 1.90]
+  body_scale_range: [0.90, 1.10]
+  motion_sample_rate_hz: 100.0
+  visible_avatar_required: true
+  draw_skeleton: false
+  internal_joint_count: 17
+  collision_body_model: "capsule_segments_plus_contact_shapes"
+  avatar_mesh_style: "recognizable_human_with_head_torso_hands_feet_and_clothing"
+  avatar_asset_policy: "prefer_local_permissively_licensed_rigged_glb; otherwise procedural_skinned_human_mesh"
+
+scenario:
+  default_mode: "random_mix"
+  modes:
+    normal_daily_routine:
+      fall_probability: 0.0
+    fall_demo:
+      fall_probability: 1.0
+      exactly_one_fall: true
+    random_mix:
+      fall_probability: 0.4
+      no_fall_probability: 0.6
+  random_seed: 20261123
+  entry_required: true
+  start_outside_door: true
+  action_sequence_randomized: true
+  minimum_actions_per_run: 5
+  maximum_actions_per_run: 12
+  allow_sleep: true
+  allow_intentional_lying_down: true
+
+motion:
+  walking_speed_mps_range: [0.45, 1.55]
+  slow_walk_speed_mps_range: [0.15, 0.45]
+  body_turn_rate_rad_per_s_range: [0.4, 2.0]
+  pause_duration_s_range: [0.3, 4.0]
+  sit_duration_s_range: [1.0, 8.0]
+  sleep_duration_s_range: [5.0, 20.0]
+  lie_down_duration_s_range: [1.0, 3.0]
+  fall_duration_s_range: [0.30, 1.00]
+  fall_recovery_probability: 0.20
+  path_planner: "astar_grid"
+  navigation_grid_resolution_m: 0.10
+  obstacle_clearance_m: 0.12
+  full_body_collision_check: true
+  floor_contact_required: true
+  furniture_contact_allowed: ["sit", "lean", "lie_on_bed", "lie_on_sofa"]
+
+weighted_actions:
+  enter: 1.0
+  walk: 5.0
+  turn: 2.0
+  pause: 2.0
+  sit: 2.0
+  stand: 2.0
+  bend: 1.5
+  pick_up: 1.0
+  kneel: 0.8
+  lie_down_intentionally: 1.0
+  sleep: 1.0
+  fall_forward: 0.25
+  fall_backward: 0.25
+  fall_sideways: 0.25
+  fall_slump: 0.20
+  fall_slow_collapse: 0.20
+
+hard_negative_actions:
+  - "quick_sit"
+  - "kneel_to_floor"
+  - "bend_to_pick_object"
+  - "intentional_lie_down"
+  - "sit_down_on_sofa_quickly"
+  - "roll_over_while_lying"
+  - "sleep_and_turn"
+
+fall_model:
+  phases: ["loss_of_balance", "descent_rotation", "impact_contact", "settling", "optional_recovery"]
+  use_rigid_body_or_contact_aware_trajectory: true
+  do_not_teleport_pose: true
+  randomize_initial_balance_direction: true
+  ground_truth_event_timestamp_required: true
+  impact_acceleration_status: "simulated_contact_quantity_not_physical_measurement"
+
+seeding:
+  global_seed_source: "scenario.random_seed_or_user_control"
+  independent_streams: ["path", "action_order", "speed", "body_shape", "fall_type", "scatterers", "rf_diffuse", "noise", "impairments"]
+  derivation: "stable_hash_of_global_seed_and_stream_name"

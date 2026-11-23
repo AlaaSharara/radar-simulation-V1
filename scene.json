@@ -1,0 +1,243 @@
+{
+  "schema_version": "1.0",
+  "scene_id": "room_4x5_default",
+  "units": "m",
+  "coordinate_frame": "world_x_width_y_depth_z_up_origin_front_left_floor_corner",
+  "room": {
+    "width_x_m": 4.0,
+    "depth_y_m": 5.0,
+    "height_z_m": 2.7,
+    "wall_thickness_m": 0.1143,
+    "floor_material_id": "concrete",
+    "wall_material_id": "plasterboard",
+    "ceiling_material_id": "plasterboard",
+    "construction": {
+      "walls": {
+        "construction_id": "interior_plasterboard_cavity_wall",
+        "layers_from_room_to_outside": [
+          {
+            "material_id": "plasterboard",
+            "thickness_m": 0.0127
+          },
+          {
+            "material_id": "air",
+            "thickness_m": 0.0889
+          },
+          {
+            "material_id": "plasterboard",
+            "thickness_m": 0.0127
+          }
+        ],
+        "metal_studs": {
+          "enabled": false,
+          "spacing_m": 0.4,
+          "status": "optional_assumption_not_in_default_scene"
+        },
+        "source_note": "Layer thicknesses reflect a construction example described in the NIST 60 GHz study; not a claim about every Egyptian room."
+      },
+      "floor": {
+        "construction_id": "concrete_slab",
+        "layers": [
+          {
+            "material_id": "concrete",
+            "thickness_m": 0.15
+          }
+        ],
+        "thickness_status": "assumption"
+      },
+      "ceiling": {
+        "construction_id": "plasterboard_ceiling",
+        "layers": [
+          {
+            "material_id": "plasterboard",
+            "thickness_m": 0.0127
+          },
+          {
+            "material_id": "air",
+            "thickness_m": 0.08
+          }
+        ],
+        "thickness_status": "assumption"
+      }
+    }
+  },
+  "openings": [
+    {
+      "id": "front_door",
+      "kind": "door",
+      "wall": "y_min",
+      "center_m": [
+        0.9,
+        0.0,
+        1.05
+      ],
+      "width_m": 0.9,
+      "height_m": 2.1,
+      "sill_height_m": 0.0,
+      "material_id": "wood",
+      "hinge_side": "left",
+      "swing_direction": "inward",
+      "open_fraction": 0.85,
+      "construction_layers": [
+        {
+          "material_id": "wood",
+          "thickness_m": 0.045
+        }
+      ]
+    },
+    {
+      "id": "back_window",
+      "kind": "window",
+      "wall": "y_max",
+      "center_m": [
+        2.0,
+        5.0,
+        1.65
+      ],
+      "width_m": 1.5,
+      "height_m": 1.1,
+      "sill_height_m": 1.1,
+      "material_id": "glass",
+      "construction_layers": [
+        {
+          "material_id": "glass",
+          "thickness_m": 0.0095
+        }
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "bed_01",
+      "kind": "bed",
+      "position_m": [
+        0.25,
+        2.95,
+        0.0
+      ],
+      "dimensions_m": [
+        1.45,
+        1.9,
+        0.58
+      ],
+      "yaw_rad": 0.0,
+      "material_id": "wood",
+      "component_materials": {
+        "frame": "wood",
+        "mattress": "fabric",
+        "bedding": "fabric"
+      },
+      "collision_shape": "oriented_box",
+      "notes": "Bed head faces the back wall; collision includes frame and mattress."
+    },
+    {
+      "id": "sofa_01",
+      "kind": "sofa",
+      "position_m": [
+        2.3,
+        3.78,
+        0.0
+      ],
+      "dimensions_m": [
+        1.5,
+        0.82,
+        0.88
+      ],
+      "yaw_rad": 0.0,
+      "material_id": "fabric",
+      "component_materials": {
+        "frame": "wood",
+        "upholstery": "fabric"
+      },
+      "collision_shape": "oriented_box"
+    },
+    {
+      "id": "table_01",
+      "kind": "table",
+      "position_m": [
+        1.88,
+        2.32,
+        0.0
+      ],
+      "dimensions_m": [
+        0.88,
+        0.58,
+        0.46
+      ],
+      "yaw_rad": 0.0,
+      "material_id": "wood",
+      "collision_shape": "oriented_box"
+    },
+    {
+      "id": "chair_01",
+      "kind": "chair",
+      "position_m": [
+        2.75,
+        1.7,
+        0.0
+      ],
+      "dimensions_m": [
+        0.52,
+        0.52,
+        0.95
+      ],
+      "yaw_rad": 3.141592653589793,
+      "material_id": "wood",
+      "component_materials": {
+        "frame": "wood",
+        "seat": "fabric"
+      },
+      "collision_shape": "oriented_box"
+    },
+    {
+      "id": "wardrobe_01",
+      "kind": "wardrobe",
+      "position_m": [
+        3.12,
+        0.48,
+        0.0
+      ],
+      "dimensions_m": [
+        0.7,
+        1.1,
+        2.1
+      ],
+      "yaw_rad": 0.0,
+      "material_id": "wood",
+      "collision_shape": "oriented_box"
+    }
+  ],
+  "radar": {
+    "id": "radar_01",
+    "profile_id": "iwr6843isk_ods_class_room_v1",
+    "mount_type": "wall",
+    "position_m": [
+      2.0,
+      0.08,
+      2.25
+    ],
+    "boresight_unit_vector_world": [
+      0.0,
+      0.9659258263,
+      -0.2588190451
+    ],
+    "yaw_rad": 0.0,
+    "tilt_down_deg": 15.0,
+    "wall": "y_min",
+    "notes": "Boresight is directed into the room (+Y) and 15 degrees below horizontal."
+  },
+  "initial_actor": {
+    "actor_id": "person_01",
+    "avatar_asset_id": "adult_male_default",
+    "start_position_m": [
+      0.9,
+      -0.75,
+      0.0
+    ],
+    "entry_target_m": [
+      0.9,
+      0.55,
+      0.0
+    ]
+  }
+}

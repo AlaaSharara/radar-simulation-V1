@@ -1,0 +1,110 @@
+# Complex relative permittivity convention: epsilon_r = epsilon_real - j*epsilon_imag.
+# Values are not universal: moisture, composition, thickness, paint, metal studs and angle matter.
+
+schema_version: "1.0"
+reference_frequency_hz: 60500000000.0
+notes: "Material table entries for wood/plasterboard/glass are at 60.5 GHz, close to but not exactly the configured 61.0 GHz carrier. Frequency-dependent interpolation is not implemented in the first baseline."
+materials:
+  air:
+    epsilon_real: 1.0
+    epsilon_imag: 0.0
+    model: "lossless_air"
+    roughness_rms_m: 0.0
+    thickness_default_m: null
+    provenance: "standard_physical_constant_approximation"
+    source_url: "https://www.itu.int/rec/R-REC-P.2040-4-202509-I/en"
+    uncertainty: "negligible for this room-scale baseline"
+
+  wood:
+    epsilon_real: 1.99
+    epsilon_imag: 0.1135
+    model: "complex_relative_permittivity_at_reference_frequency"
+    valid_frequency_hz: [60500000000.0, 60500000000.0]
+    roughness_rms_m: 0.0002
+    roughness_provenance: "assumption_low_confidence_sensitivity_sweep_required"
+    provenance: "literature_value_from_NIST_60.5_GHz_table_based_on_ITU_R_P.2040"
+    source_url: "https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=929131"
+    uncertainty: "sample-dependent; use sensitivity sweep around the tabulated value"
+    notes: "NIST Table I reports this value at 60.5 GHz; actual wood type and moisture can differ."
+
+  plasterboard:
+    epsilon_real: 2.94
+    epsilon_imag: 0.0628
+    model: "complex_relative_permittivity_at_reference_frequency"
+    roughness_rms_m: 0.0002
+    roughness_provenance: "assumption_low_confidence_sensitivity_sweep_required"
+    thickness_default_m: 0.0127
+    thickness_provenance: "NIST_study_wall_sheet_example"
+    valid_frequency_hz: [60500000000.0, 60500000000.0]
+    provenance: "literature_value_from_NIST_60.5_GHz_table_based_on_ITU_R_P.2040"
+    source_url: "https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=929131"
+    uncertainty: "layer count, air gap, metal studs and paint change the effective wall response"
+    notes: "A real wall can be multilayered; do not model a cavity wall as a single homogeneous sheet when accuracy matters."
+
+  drywall:
+    alias_of: "plasterboard"
+    provenance: "material_alias"
+
+  glass:
+    epsilon_real: 6.27
+    epsilon_imag: 0.1703
+    model: "complex_relative_permittivity_at_reference_frequency"
+    roughness_rms_m: 0.00005
+    roughness_provenance: "assumption_smooth_clear_glass"
+    thickness_default_m: 0.0095
+    thickness_provenance: "NIST_study_single_layer_glass_example"
+    valid_frequency_hz: [60500000000.0, 60500000000.0]
+    provenance: "literature_value_from_NIST_60.5_GHz_table_based_on_ITU_R_P.2040"
+    source_url: "https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=929131"
+    uncertainty: "glass composition, coatings, tint and multiple panes can strongly change penetration loss"
+
+  concrete:
+    epsilon_real: 5.24
+    roughness_rms_m: 0.001
+    roughness_provenance: "assumption_surface_finish_dependent"
+    thickness_default_m: 0.15
+    thickness_provenance: "room_floor_slab_assumption"
+    conductivity_model:
+      type: "power_law"
+      coefficient: 0.0462
+      exponent: 0.7822
+      frequency_unit: "GHz"
+      equation: "sigma_S_per_m = coefficient * frequency_GHz ** exponent"
+    model: "ITU_R_P2040_3_material_model_coefficients_used_as_initial_prior"
+    provenance: "standard_model_parameter_from_previous_P2040_edition"
+    source_url: "https://www.itu.int/rec/R-REC-P.2040"
+    uncertainty: "concrete aggregate, moisture and reinforcement cause material variation; confirm exact coefficients against current P.2040-4 before hardware-grade work"
+
+  metal:
+    model: "perfect_electric_conductor_boundary"
+    roughness_rms_m: 0.00005
+    roughness_provenance: "assumption_surface_finish_dependent"
+    thickness_default_m: 0.001
+    thickness_provenance: "assumption_not_used_in_PEC_reflection"
+    epsilon_real: 1.0
+    epsilon_imag: 2971900.0
+    provenance: "NIST_60.5_GHz_table_value; PEC approximation used by solver"
+    source_url: "https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=929131"
+    uncertainty: "coatings, oxidation, thickness and surface roughness are not represented in PEC mode"
+
+  fabric:
+    epsilon_real: 1.5
+    epsilon_imag: 0.05
+    model: "effective_clothing_upholstery_prior"
+    roughness_rms_m: 0.001
+    roughness_provenance: "assumption_low_confidence"
+    thickness_default_m: 0.01
+    thickness_provenance: "assumption_low_confidence"
+    provenance: "assumption_low_confidence"
+    source_url: null
+    uncertainty: "very high; no numeric fabric value is claimed as sourced. Sweep epsilon_real 1.2–2.5 and epsilon_imag 0.01–0.2; calibrate if fabric clutter is important"
+
+  human_clothing:
+    alias_of: "fabric"
+    provenance: "material_alias_for_first_simulation"
+
+solver_conventions:
+  fresnel_polarizations: ["TE", "TM"]
+  incidence_angle: "angle between incident ray direction and surface normal, in [0, pi/2]"
+  conductivity_loss: "If conductivity is used, convert it to the imaginary permittivity consistently. Do not add the same loss again through epsilon_imag."
+  diffuse_scattering: "Roughness-based stochastic scattering approximation; parameters are assumptions unless measured."
