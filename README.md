@@ -1,8 +1,12 @@
-# Antigravity Radar Room Simulation — Starter Pack
+# mmWave FMCW Radar Simulation & 3D Digital Twin Platform
 
-This folder is the project contract and task pack for building the first end-to-end **60 GHz indoor FMCW radar simulation** in Antigravity.
+[![Documentation: Project Specification & Guide](https://img.shields.io/badge/Docs-Bilingual_Spec_%26_Guide_(Ar%2FEn)-blue.svg)](PROJECT_SPECIFICATION_AND_GUIDE.md)
+[![Tests: 68 Passing](https://img.shields.io/badge/Tests-68%2F68_Passing-brightgreen.svg)](tests/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE-NOTICE.md)
 
-It is intentionally designed for a beginner: open this folder as the Antigravity workspace, read `START_HERE.md`, and give the agent **one task prompt at a time** from `PROMPTS.md`.
+> [!IMPORTANT]
+> **Complete Technical Specification & User Guide (English & Arabic):**  
+> For the comprehensive mathematical foundations, physical equations (FMCW, TDM-MIMO, ITU-R P.2040-3, OS-CFAR), system architecture, and team onboarding instructions, refer to **[PROJECT_SPECIFICATION_AND_GUIDE.md](PROJECT_SPECIFICATION_AND_GUIDE.md)** (متوفر باللغتين العربية والإنجليزية).
 
 ## What this project is meant to build
 
