@@ -1,0 +1,62 @@
+"""Physically grounded 60 GHz indoor FMCW radar room simulation package."""
+
+from radarsim.config import (
+    ConfigValidationError,
+    DERIVED_METRIC_KEYS,
+    DerivedRadarMetrics,
+    ExpectedDerivedMetrics,
+    MaterialDatabase,
+    MetricComparison,
+    MotionConfig,
+    ProjectConfig,
+    RadarProfile,
+    SceneConfig,
+    SimProfileConfig,
+    compare_derived_metrics,
+    compute_derived_metrics,
+    load_material_db,
+    load_motion_config,
+    load_project_config,
+    load_radar_config_with_expected,
+    load_radar_profile,
+    load_scene_config,
+    load_sim_profile,
+    validate_derived_metrics,
+)
+from radarsim.rng import (
+    DEFAULT_STREAM_NAMES,
+    SeedManager,
+    derive_stream_seed,
+    make_generator,
+)
+
+__version__ = "0.1.0"
+
+__all__ = [
+    "__version__",
+    "ConfigValidationError",
+    "DERIVED_METRIC_KEYS",
+    "DerivedRadarMetrics",
+    "ExpectedDerivedMetrics",
+    "MaterialDatabase",
+    "MetricComparison",
+    "MotionConfig",
+    "ProjectConfig",
+    "RadarProfile",
+    "SceneConfig",
+    "SimProfileConfig",
+    "compare_derived_metrics",
+    "compute_derived_metrics",
+    "load_material_db",
+    "load_motion_config",
+    "load_project_config",
+    "load_radar_config_with_expected",
+    "load_radar_profile",
+    "load_scene_config",
+    "load_sim_profile",
+    "validate_derived_metrics",
+    "DEFAULT_STREAM_NAMES",
+    "SeedManager",
+    "derive_stream_seed",
+    "make_generator",
+]
