@@ -1,0 +1,14 @@
+numpy<3,>=1.26
+scipy<2,>=1.12
+PyYAML<7,>=6.0
+pydantic<3,>=2.6
+fastapi<1,>=0.110
+uvicorn[standard]<1,>=0.27
+websockets<16,>=12
+scikit-learn<2,>=1.4
+h5py<4,>=3.10
+matplotlib<4,>=3.8
+trimesh<5,>=4.0
+pytest<9,>=8.0
+pytest-cov<7,>=4.1
+ruff<1,>=0.4

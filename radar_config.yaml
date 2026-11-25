@@ -1,0 +1,169 @@
+# Reference profile: IWR6843ISK-ODS-class, with provisional idealized virtual-array coordinates.
+# This file is the single source of truth for waveform and RF parameters.
+# Values tagged assumption/provisional must not be represented as measured EVM characteristics.
+
+schema_version: "1.0"
+profile:
+  id: "iwr6843isk_ods_class_room_v1"
+  name: "60 GHz 3-TX / 4-RX ODS-style FMCW radar"
+  status: "simulation_reference_profile_not_a_board_clone"
+  hardware_reference: "Texas Instruments IWR6843ISK-ODS"
+  source_urls:
+    - "https://www.ti.com/tool/IWR6843ISK-ODS"
+    - "https://www.ti.com/product/IWR6843"
+    - "https://www.ti.com/lit/ug/swru546e/swru546e.pdf"
+  notes:
+    - "TI specifies 60-64 GHz, 3 TX and 4 RX for the IWR6843 family."
+    - "TI lists 120-degree azimuth and 120-degree elevation FoV for IWR6843ISK-ODS."
+    - "The configured virtual 4x3 grid is an idealized provisional geometry, not board-layout data."
+    - "The waveform values below are chosen for this simulation and are not a TI factory profile."
+
+rf:
+  speed_of_light_m_per_s: 299792458.0
+  carrier_frequency_hz: 61000000000.0
+  operating_band_hz: [60000000000.0, 64000000000.0]
+  tx_count: 3
+  rx_count: 4
+  tx_schedule: [0, 1, 2]
+  tdm_mode: true
+  tx_power_dbm_per_active_tx: 10.0
+  tx_power_provenance: "manufacturer_evm_reference"
+  antenna_gain_dbi_peak: 5.0
+  antenna_gain_provenance: "manufacturer_evm_guide_reference_for_ODS"
+  antenna_pattern:
+    model: "separable_cosine_power_approximation"
+    azimuth_fov_3db_deg: 120.0
+    elevation_fov_3db_deg: 120.0
+    cosine_power_exponent: 1.0
+    status: "approximation_until_measured_pattern_is_imported"
+  receiver_noise_figure_db: 12.0
+  receiver_noise_figure_provenance: "TI_IWR6843_product_page"
+  phase_noise:
+    enabled: true
+    reference_dbc_per_hz_at_1mhz: -93.0
+    provenance: "TI_IWR6843_product_page_reference"
+    model: "configurable_lorentzian_or_white_plus_random_walk_approximation"
+    linewidth_hz: 100000.0
+    status: "model_parameters_require_calibration"
+  receiver:
+    noise_temperature_k: 290.0
+    noise_equivalent_bandwidth_hz: 2300000.0
+    max_if_frequency_hz: 2400000.0
+    if_filter_order: 3
+    if_filter_type: "butterworth_lowpass"
+    receiver_gain_db: 30.0
+    receiver_gain_status: "assumption"
+    adc_full_scale_vpp: 1.0
+    adc_input_impedance_ohm: 50.0
+    adc_bits: 12
+    adc_bits_status: "confirm_exact_effective_bits_against_selected_device_data_sheet_before_hardware_comparison"
+    adc_clip_enabled: true
+    adc_quantization_enabled: true
+    sample_representation: "complex_iq_normalized_to_full_scale"
+
+waveform:
+  type: "linear_fmcw"
+  start_frequency_hz: 60000000000.0
+  slope_hz_per_s: 50000000000000.0
+  ramp_time_s: 0.000040
+  adc_start_time_s: 0.000000
+  adc_sample_rate_hz: 5000000.0
+  adc_samples_per_chirp: 192
+  adc_sampling: "real_if_then_complex_iq_equivalent_for_baseband_processing"
+  idle_time_s: 0.000020
+  chirp_period_s: 0.000060
+  chirps_per_tx_per_frame: 128
+  frame_period_s: 0.050
+  frame_rate_hz: 20.0
+  nominal_sweep_bandwidth_hz: 2000000000.0
+  # Effective bandwidth is derived as slope * (ADC samples / ADC sample rate).
+  # This is the bandwidth represented by the active digitized fast-time interval.
+  range_fft_size: 256
+  doppler_fft_size: 128
+  angle_fft_azimuth_size: 64
+  angle_fft_elevation_size: 32
+  window:
+    range: "hann"
+    doppler: "hann"
+    angle: "none"
+
+antenna_array:
+  layout: "idealized_4x3_virtual_planar_grid"
+  status: "provisional_assumption_not_measured_board_geometry"
+  coordinate_units: "wavelengths"
+  # Separable TX/RX positions form 12 virtual phase centres at half-wavelength spacing.
+  # Replace with coordinates measured from the actual selected board/antenna artwork.
+  rx_positions_lambda:
+    - [0.0, 0.0, 0.0]
+    - [0.5, 0.0, 0.0]
+    - [1.0, 0.0, 0.0]
+    - [1.5, 0.0, 0.0]
+  tx_positions_lambda:
+    - [0.0, 0.0, 0.0]
+    - [0.0, 0.5, 0.0]
+    - [0.0, 1.0, 0.0]
+  virtual_position_rule: "tx_position_plus_rx_position"
+  channel_gain_mismatch_db_rms: 0.5
+  channel_phase_mismatch_deg_rms: 3.0
+  channel_mismatch_status: "assumed_impairment_priors_to_be_swept"
+
+impairments:
+  phase_noise:
+    enabled: true
+    strength_scale: 1.0
+  chirp_slope_error:
+    enabled: true
+    sigma_ppm: 20.0
+  chirp_start_frequency_error:
+    enabled: true
+    sigma_hz: 100000.0
+  tx_rx_channel_mismatch:
+    enabled: true
+  iq_imbalance:
+    enabled: true
+    amplitude_mismatch_db_sigma: 0.2
+    phase_mismatch_deg_sigma: 2.0
+  adc_quantization:
+    enabled: true
+  adc_clipping:
+    enabled: true
+  tx_leakage:
+    enabled: true
+    leakage_level_db_relative_to_full_scale: -35.0
+  timing_jitter:
+    enabled: true
+    sigma_s: 2.0e-12
+  thermal_noise:
+    enabled: true
+  impairments_provenance: "initial engineering priors; sweep and calibrate"
+
+human_scattering:
+  model: "aspect_dependent_capsule_scatterers"
+  rcs_prior_dbsm:
+    minimum: -25.0
+    nominal: -15.0
+    maximum: -5.0
+  rcs_status: "broad_assumption_prior_not_a_measured_human_rcs_dataset"
+  aspect_dependence_enabled: true
+  clothing_scattering_scale: 1.0
+  deterministic_micro_scatterers_per_body_segment: 3
+  random_scatterers_per_body_segment: 2
+  note: "Do not represent this prior as universally correct; run sensitivity sweeps and later calibrate with measured radar data."
+
+expected_derived:
+  # Independently computed from the config. Tolerances are absolute SI units.
+  effective_bandwidth_hz: 1920000000.000000
+  range_resolution_m: 0.078070952604
+  max_unambiguous_range_m: 7.195018992000
+  wavelength_m: 0.004914630459016
+  same_tx_chirp_interval_s: 0.000180000000
+  max_unambiguous_radial_velocity_mps: 6.825875637523
+  velocity_resolution_mps: 0.106654306836
+  tolerances:
+    effective_bandwidth_hz: 1.0
+    range_resolution_m: 1.0e-9
+    max_unambiguous_range_m: 1.0e-8
+    wavelength_m: 1.0e-12
+    same_tx_chirp_interval_s: 1.0e-12
+    max_unambiguous_radial_velocity_mps: 1.0e-8
+    velocity_resolution_mps: 1.0e-8

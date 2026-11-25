@@ -1,0 +1,44 @@
+schema_version: "1.0"
+backend:
+  host: "127.0.0.1"
+  port: 8000
+  websocket_path: "/ws/sim"
+  frame_rate_hz: 20.0
+  default_mode: "preview"
+  modes: ["preview", "full_sim", "analysis_export"]
+  max_cached_frames: 60
+frontend:
+  host: "127.0.0.1"
+  port: 5173
+  framework: "Vite + React + Three.js + Plotly"
+  four_panel_layout: true
+  shared_frame_clock: true
+  show_skeleton: false
+  show_ground_truth_overlay_on_point_cloud_default: false
+controls:
+  play_pause: true
+  single_step: true
+  seed_selector: true
+  scenario_mode_selector: true
+  speed_values: [0.25, 0.5, 1.0, 1.5, 2.0]
+  impairment_toggles: true
+  regenerate_scenario: true
+panels:
+  - id: "scene"
+    title: "Ground-truth scene"
+    content: "Room furniture and fully visible animated human avatar; never draw skeleton."
+  - id: "rf"
+    title: "RF propagation"
+    content: "Animated ray/wave paths; LOS, reflections, occlusion, path strength."
+  - id: "point_cloud"
+    title: "Radar point cloud"
+    content: "Radar-derived detections, velocity colours, tracks and optional occupancy voxels."
+  - id: "analytics"
+    title: "Signal and event diagnostics"
+    content: "Range-Doppler, range-angle, event timeline, track status and baseline fall alert."
+outputs:
+  reports_dir: "reports"
+  data_dir: "data"
+  export_format: "hdf5"
+  save_config_snapshot: true
+  save_seed_map: true
