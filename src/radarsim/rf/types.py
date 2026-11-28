@@ -46,7 +46,8 @@ class RFPropagationConfig:
     max_transmission_slabs: int = 2
     enable_diffuse_scattering: bool = True
     diffuse_points_per_surface: int = 2
-    max_diffuse_surfaces: int = 12
+    max_diffuse_surfaces: int = 12  # room shell (walls/floor/ceiling/openings), largest first
+    max_diffuse_furniture_surfaces: int = 8  # furniture panels get their own budget (they are small)
     enable_human_body_occlusion: bool = True
     min_path_amplitude_linear: float = 1e-12
     preview_mode: bool = False

@@ -253,7 +253,14 @@ class RFPropagationEngine:
             and lookup_material_properties(self.scene.materials, s.material_id, self.fc_hz).roughness_rms_m > 0.0
         ]
         candidates.sort(key=lambda s: s.area_m2, reverse=True)
-        selected = candidates[: self.config.max_diffuse_surfaces]
+        # Room shell and furniture have SEPARATE budgets.  Furniture panels are much smaller than
+        # walls/floor, so a single "largest first" list never selected any furniture and the
+        # diffuse (rough-surface) return of fabric/wood furniture was silently missing.
+        shell = [s for s in candidates if s.kind != "furniture"]
+        furniture = [s for s in candidates if s.kind == "furniture"]
+        selected = shell[: self.config.max_diffuse_surfaces] + furniture[
+            : max(0, self.config.max_diffuse_furniture_surfaces)
+        ]
 
         points: list[tuple[SurfacePatch, Vec3, float]] = []
         for surf in selected:

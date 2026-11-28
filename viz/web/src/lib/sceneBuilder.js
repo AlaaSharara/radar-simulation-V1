@@ -190,7 +190,8 @@ function buildFurnitureMesh(obj, sceneData, mats) {
   if (kind === 'bed') {
     const legH = Math.min(0.10, dz * 0.18);
     const frameH = Math.min(0.16, dz * 0.28);
-    const mattH = Math.max(0.14, dz * 0.42);
+    // Mattress top sits 5 cm below the object height (bedding/pillows) -- identical rule in the RF panel model
+    const mattH = Math.max(0.14, dz - legH - frameH - 0.05);
     const headH = dz;
     const headT = Math.min(0.08, dy * 0.06);
 
@@ -459,16 +460,18 @@ export function buildRealisticRoomGroup(sceneData, { showFovCone = false } = {})
   const backWall = new THREE.Mesh(new THREE.BoxGeometry(w, h, wallT * 0.5), mats.wall);
   backWall.position.set(w / 2, h / 2, -d - wallT * 0.25);
   backWall.receiveShadow = true;
+  backWall.userData.cutaway = 'back';
   group.add(backWall);
 
   const leftWall = new THREE.Mesh(new THREE.BoxGeometry(wallT * 0.5, h, d + wallT * 0.5), mats.wall);
   leftWall.position.set(-wallT * 0.25, h / 2, -d / 2);
   leftWall.receiveShadow = true;
+  leftWall.userData.cutaway = 'left';
   group.add(leftWall);
 
   // Subtle architectural baseboards on back & left cutaway walls
-  addBoxPart(group, w, 0.09, 0.02, w / 2, 0.045, -d + 0.01, mats.baseboard, { castShadow: false });
-  addBoxPart(group, 0.02, 0.09, d, 0.01, 0.045, -d / 2, mats.baseboard, { castShadow: false });
+  addBoxPart(group, w, 0.09, 0.02, w / 2, 0.045, -d + 0.01, mats.baseboard, { castShadow: false }).userData.cutaway = 'back';
+  addBoxPart(group, 0.02, 0.09, d, 0.01, 0.045, -d / 2, mats.baseboard, { castShadow: false }).userData.cutaway = 'left';
 
   // Cutaway floor-level curb guides along front (y=0) & right (x=w) walls
   addBoxPart(group, w, 0.04, 0.04, w / 2, 0.02, 0.02, mats.baseboard, { castShadow: false });
@@ -505,6 +508,8 @@ export function buildRealisticRoomGroup(sceneData, { showFovCone = false } = {})
         const winGroup = new THREE.Group();
         winGroup.position.set(cx, cy, cz + (op.wall === 'y_max' ? 0.025 : op.wall === 'y_min' ? -0.025 : 0));
         if (!isOnYWall) winGroup.rotation.y = Math.PI / 2;
+        if (op.wall === 'y_max') winGroup.userData.cutaway = 'back';
+        else if (op.wall === 'x_min') winGroup.userData.cutaway = 'left';
 
         // Aluminum mullions & sill
         addBoxPart(winGroup, winW, frameT, 0.07, 0, winH / 2, 0, mats.metalDark, { castShadow: false });
@@ -551,7 +556,10 @@ export function buildRealisticRoomGroup(sceneData, { showFovCone = false } = {})
 
   // Multi-part realistic furniture from scene objects
   for (const obj of sceneData.objects || []) {
-    group.add(buildFurnitureMesh(obj, sceneData, mats));
+    const furnMesh = buildFurnitureMesh(obj, sceneData, mats);
+    furnMesh.name = `furniture_${obj.id}`;
+    furnMesh.userData.isFurniture = true;
+    group.add(furnMesh);
   }
 
   // Realistic 60 GHz wall-mounted radar + optional FoV beam frustum
@@ -594,5 +602,101 @@ export function buildRadarPolarGrid(sceneData, { maxRangeM = 5.0 } = {}) {
     group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([origin, end]), ringMat));
   }
 
+  return group;
+}
+
+/**
+ * Colour for a reflection level [dB]: blue (weak) -> cyan -> green -> yellow -> red (strong).
+ */
+export function rfColor(db, lo = -40, hi = -4) {
+  const t = Math.min(1, Math.max(0, (db - lo) / (hi - lo)));
+  const stops = [
+    [0.0, [0.19, 0.29, 0.78]],
+    [0.25, [0.13, 0.78, 0.86]],
+    [0.5, [0.25, 0.82, 0.35]],
+    [0.75, [0.98, 0.83, 0.15]],
+    [1.0, [0.86, 0.18, 0.1]],
+  ];
+  for (let i = 1; i < stops.length; i++) {
+    if (t <= stops[i][0]) {
+      const [t0, c0] = stops[i - 1];
+      const [t1, c1] = stops[i];
+      const a = (t - t0) / (t1 - t0 || 1);
+      return new THREE.Color(c0[0] + (c1[0] - c0[0]) * a, c0[1] + (c1[1] - c0[1]) * a, c0[2] + (c1[2] - c0[2]) * a);
+    }
+  }
+  return new THREE.Color(0.86, 0.18, 0.1);
+}
+
+export const RF_DB_RANGE = [-40, -4];
+
+/**
+ * The furniture exactly as the RF engine models it: one translucent quad per RF panel (backend
+ * `scene.surfaces` with kind === 'furniture'), coloured by the coherent reflection at 45 deg.
+ * Use it to check visually that the radar's furniture matches the visible furniture.
+ */
+export function buildRfPanelsGroup(sceneData) {
+  const group = new THREE.Group();
+  group.name = 'rf_panels';
+  group.userData.meshes = [];
+  for (const s of sceneData?.surfaces || []) {
+    if (s.kind !== 'furniture' || !s.vertices_m || s.vertices_m.length !== 4) continue;
+    const v = s.vertices_m.map(worldToThreeVec);
+    const pos = new Float32Array([
+      v[0].x, v[0].y, v[0].z, v[1].x, v[1].y, v[1].z, v[2].x, v[2].y, v[2].z,
+      v[0].x, v[0].y, v[0].z, v[2].x, v[2].y, v[2].z, v[3].x, v[3].y, v[3].z,
+    ]);
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    geo.computeVertexNormals();
+    const db = s.rf?.reflection_db?.['45'] ?? -40;
+    const color = rfColor(db, RF_DB_RANGE[0], RF_DB_RANGE[1]);
+    const mat = new THREE.MeshBasicMaterial({
+      color,
+      transparent: true,
+      opacity: 0.55,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.userData.surface = s;
+    group.add(mesh);
+    group.userData.meshes.push(mesh);
+    const edge = new THREE.LineLoop(
+      new THREE.BufferGeometry().setFromPoints(v),
+      new THREE.LineBasicMaterial({ color: 0x0f172a, transparent: true, opacity: 0.7 })
+    );
+    group.add(edge);
+  }
+  return group;
+}
+
+/** Floating text labels above each furniture object (sprites, always readable from any angle). */
+export function buildObjectLabels(sceneData) {
+  const group = new THREE.Group();
+  group.name = 'object_labels';
+  for (const obj of sceneData?.objects || []) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 256;
+    canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'rgba(15,23,42,0.82)';
+    ctx.fillRect(0, 8, 256, 48);
+    ctx.strokeStyle = 'rgba(148,163,184,0.7)';
+    ctx.strokeRect(0.5, 8.5, 255, 47);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = 'bold 26px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(obj.id, 128, 33);
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }));
+    const top = worldToThreeVec(obj.box.center_m);
+    sprite.position.set(top.x, (obj.dimensions_m?.[2] ?? 1) + 0.28, top.z);
+    sprite.scale.set(0.62, 0.155, 1);
+    sprite.renderOrder = 10;
+    group.add(sprite);
+  }
   return group;
 }

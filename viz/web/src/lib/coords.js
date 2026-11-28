@@ -1,5 +1,9 @@
 import * as THREE from 'three';
 import {
+  buildObjectLabels,
+  buildRfPanelsGroup,
+  RF_DB_RANGE,
+  rfColor,
   buildRadarPolarGrid,
   buildRealisticRoomGroup,
   worldDirToThreeVec,
@@ -14,7 +18,7 @@ export function worldToThree(pt) {
   return worldToThreeVec(pt);
 }
 
-export { buildRadarPolarGrid, worldDirToThreeVec };
+export { buildObjectLabels, buildRadarPolarGrid, buildRfPanelsGroup, RF_DB_RANGE, rfColor, worldDirToThreeVec };
 
 /**
  * Build reusable 3D room shell, openings, furniture, and radar mount strictly

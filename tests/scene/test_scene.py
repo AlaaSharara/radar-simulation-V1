@@ -45,13 +45,18 @@ def test_default_scene_loads_all_surfaces_openings_and_furniture() -> None:
     # All 5 expected furniture objects exist
     object_ids = {obj.object_id for obj in scene.objects}
     assert object_ids == {"bed_01", "sofa_01", "table_01", "chair_01", "wardrobe_01"}
+    # Furniture is modelled with realistic RF panels (see scene/furniture_rf.py): hollow carcasses,
+    # open-underneath tables/chairs, foam upholstery -- NOT a solid six-face box any more.
     for obj in scene.objects:
-        assert len(obj.surfaces) == 6
+        assert len(obj.surfaces) >= 1
+        assert all(s.kind == "furniture" and s.parent_id == obj.object_id for s in obj.surfaces)
+    assert len(scene.get_object("table_01").surfaces) == 1  # one top plate, open underneath
+    assert len(scene.get_object("wardrobe_01").surfaces) == 6  # hollow carcass
 
-    # Component material mapping respected on furniture surfaces
-    bed_faces = {s.metadata["face"]: s.material_id for s in scene.get_object("bed_01").surfaces}
-    assert bed_faces["top"] == "fabric"
-    assert bed_faces["front"] == "wood"
+    # Component material mapping respected on furniture panels
+    bed = {s.surface_id: s for s in scene.get_object("bed_01").surfaces}
+    assert bed["bed_01_mattress_top"].layers[0].material_id == "fabric"
+    assert bed["bed_01_rail_front"].material_id == "wood"
 
     # Door and window openings exist with exact construction layer thicknesses
     door = scene.get_opening("front_door")

@@ -26,6 +26,7 @@ from radarsim.config import (
     load_material_db,
     load_scene_config,
 )
+from radarsim.scene.furniture_rf import build_detailed_furniture_surfaces
 from radarsim.scene.geometry import (
     AABB,
     OrientedBox,
@@ -521,7 +522,15 @@ def _build_furniture_surfaces(
     box: OrientedBox,
     material_db: MaterialDatabase,
 ) -> tuple[SurfacePatch, ...]:
-    """Build the 6 oriented rectangular faces of a furniture object."""
+    """Build the RF panels of a furniture object.
+
+    Known kinds (bed, sofa, table, chair, wardrobe) use the detailed hollow/open panel
+    models in ``furniture_rf`` (see that module for the physical rationale); any other kind
+    falls back to the legacy solid six-face box.
+    """
+    detailed = build_detailed_furniture_surfaces(obj.id, obj.kind, box, material_db)
+    if detailed is not None:
+        return detailed
     c = np.asarray(box.center_m, dtype=np.float64)
     hx, hy, hz = box.half_extents_m
     axes2d = box.axes_2d()
@@ -703,6 +712,39 @@ class Scene:
             blocked=blocked,
         )
 
+    def _surface_payload(self, surf: SurfacePatch, frequency_hz: float | None) -> dict[str, Any]:
+        """Surface dict; furniture panels also carry their RF response so the 3D view can colour them.
+
+        ``rf`` holds TE-polarised coherent reflection (dB) at 0/45/70 deg incidence, 45 deg
+        transmission (dB) and the roughness factor, all from the SAME transfer-matrix code the
+        RF engine uses (nothing is re-derived in the browser).
+        """
+        payload = surf.to_dict()
+        if surf.kind != "furniture":
+            return payload
+        from radarsim.rf.em import evaluate_surface_em  # lazy: rf.em imports radarsim.scene
+
+        f_hz = float(frequency_hz) if frequency_hz else float(self.materials.reference_frequency_hz)
+
+        def _db(x: complex) -> float:
+            return round(20.0 * math.log10(max(abs(x), 1e-6)), 2)
+
+        em = {
+            deg: evaluate_surface_em(surf.layers, self.materials, math.radians(deg), f_hz)
+            for deg in (0.0, 45.0, 70.0)
+        }
+        payload["rf"] = {
+            "frequency_hz": f_hz,
+            "polarization": "TE",
+            "reflection_db": {str(int(d)): _db(e.reflection_coherent) for d, e in em.items()},
+            "reflection_smooth_db": {str(int(d)): _db(e.reflection_smooth) for d, e in em.items()},
+            "transmission_db_45": _db(em[45.0].transmission),
+            "roughness_factor_45": round(em[45.0].roughness_factor, 4),
+            "part": surf.metadata.get("part"),
+            "face": surf.metadata.get("face"),
+        }
+        return payload
+
     def to_dict(self, *, frequency_hz: float | None = None) -> dict[str, Any]:
         """Export a pure JSON-serializable normalized scene payload for RF, motion, and frontend."""
         mat_summary = {
@@ -733,7 +775,7 @@ class Scene:
             },
             "openings": [op.to_dict() for op in self.openings],
             "objects": [obj.to_dict() for obj in self.objects],
-            "surfaces": [surf.to_dict() for surf in self.surfaces],
+            "surfaces": [self._surface_payload(surf, frequency_hz) for surf in self.surfaces],
             "materials": mat_summary,
             "initial_actor": (
                 {

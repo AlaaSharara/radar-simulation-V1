@@ -315,6 +315,7 @@ class SimulationPipeline:
                     enable_diffuse_scattering=True,
                     diffuse_points_per_surface=1,
                     max_diffuse_surfaces=4,
+                    max_diffuse_furniture_surfaces=3,
                     enable_human_body_occlusion=False,
                     preview_mode=True,
                 ),

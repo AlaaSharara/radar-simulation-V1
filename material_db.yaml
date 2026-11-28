@@ -103,6 +103,38 @@ materials:
     alias_of: "fabric"
     provenance: "material_alias_for_first_simulation"
 
+  chipboard:
+    epsilon_real: 2.58
+    model: "ITU_R_P2040_3_material_model_coefficients"
+    conductivity_model:
+      type: "power_law"
+      coefficient: 0.0217
+      exponent: 0.78
+      frequency_unit: "GHz"
+      equation: "sigma_S_per_m = coefficient * frequency_GHz ** exponent"
+    valid_frequency_hz: [1000000000.0, 100000000000.0]
+    roughness_rms_m: 0.0002
+    roughness_provenance: "assumption_low_confidence_sensitivity_sweep_required"
+    thickness_default_m: 0.018
+    thickness_provenance: "typical_furniture_carcass_panel_16_to_19_mm"
+    provenance: "ITU_R_P.2040-3_Table_3_chipboard_a2.58_c0.0217_d0.78"
+    source_url: "https://www.itu.int/rec/R-REC-P.2040"
+    uncertainty: "sample-dependent (resin/density/moisture, veneer or laminate); sweep epsilon_real 2.3-3.2 and sigma +-50%"
+    notes: "Used for wardrobe carcass panels and other board furniture. Wood (solid) keeps the NIST 60.5 GHz value."
+
+  foam:
+    epsilon_real: 1.2
+    epsilon_imag: 0.03
+    model: "effective_upholstery_foam_prior"
+    roughness_rms_m: 0.001
+    roughness_provenance: "assumption_low_confidence"
+    thickness_default_m: 0.10
+    thickness_provenance: "assumption_cushion_thickness"
+    provenance: "assumption_low_confidence_polyurethane_foam_prior"
+    source_url: null
+    uncertainty: "very high; no 60 GHz foam value is claimed as sourced. Sweep epsilon_real 1.05-1.5 and epsilon_imag 0.005-0.1. Inner-spring mattresses contain steel coils that reflect strongly and are NOT modelled."
+    notes: "Low-density PU foam is close to air (low reflection) and mildly lossy; combined with a fabric cover and a wood/board base in furniture stacks."
+
 solver_conventions:
   fresnel_polarizations: ["TE", "TM"]
   incidence_angle: "angle between incident ray direction and surface normal, in [0, pi/2]"
